@@ -29,27 +29,27 @@ x_img = x
 k_num_1 = 24
 W_conv1 = create_weight_var([5, 5, 3, k_num_1])
 b_conv1 = create_bias_var([k_num_1])
-conv1 = tf.nn.relu(conv2d(x_img, W_conv1) + b_conv1, 2)
+conv1 = tf.nn.relu(conv2d(x_img, W_conv1, 2) + b_conv1)
 
 k_num_2 = 36
 W_conv2 = create_weight_var([5, 5, k_num_1, k_num_2])
 b_conv2 = create_bias_var([k_num_2])
-conv2 = tf.nn.relu(conv2d(conv1, W_conv2) + b_conv2, 2)
+conv2 = tf.nn.relu(conv2d(conv1, W_conv2, 2) + b_conv2)
 
 k_num_3 = 48
 W_conv3 = create_weight_var([5, 5, k_num_2, k_num_3])
 b_conv3 = create_bias_var([k_num_3])
-conv3 = tf.nn.relu(conv2d(conv2, W_conv3) + b_conv3, 2)
+conv3 = tf.nn.relu(conv2d(conv2, W_conv3, 2) + b_conv3)
 
 k_num_4 = 64
-W_conv4 = create_weight_var([5, 5, k_num_3, k_num_4])
+W_conv4 = create_weight_var([3, 3, k_num_3, k_num_4])
 b_conv4 = create_bias_var([k_num_4])
-conv4 = tf.nn.relu(conv2d(conv3, W_conv4) + b_conv4, 2)
+conv4 = tf.nn.relu(conv2d(conv3, W_conv4, 1) + b_conv4)
 
 k_num_5 = 64
-W_conv5 = create_weight_var([5, 5, k_num_4, k_num_5])
+W_conv5 = create_weight_var([3, 3, k_num_4, k_num_5])
 b_conv5 = create_bias_var([k_num_5])
-conv5 = tf.nn.relu(conv2d(conv4, W_conv5) + b_conv5, 2)
+conv5 = tf.nn.relu(conv2d(conv4, W_conv5, 1) + b_conv5)
 
 
 #######################################
