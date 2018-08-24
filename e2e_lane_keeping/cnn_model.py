@@ -19,7 +19,7 @@ def conv2d(x, W, stride):
 
 
 x = tf.placeholder(tf.float32, shape=[None, input_height, input_width, input_dim])
-y = tf.placeholder(tf.float32, shape=[None, 1])
+y_in = tf.placeholder(tf.float32, shape=[None, 1])
 
 x_img = x
 
