@@ -1,17 +1,25 @@
 import scipy
 import csv
 import cv2
+from random import shuffle
 
 class DataHandler:
 
-    def __init__(self, data_description_file):
+    def __init__(self,data_dir,  data_description_file):
         self.data_desc_file = data_description_file
+        self.data_dir = data_dir
 
-        self.data = self.get_meta_data_from_file(self.data_desc_files)
+        self.data = self.get_meta_data_from_file(self.data_desc_file)
+
+        self.train_data = []
+        self.val_data = []
+
+        self.train_iterations = 0
+        self.val_iterations = 0
 
     def get_meta_data_from_file(self, data_desc_file):
         data = []
-        with open(data_desc_file, 'r') as csvFile:
+        with open(self.data_dir + '/' + self.data_desc_file, 'r') as csvFile:
             reader = csv.reader(csvFile, delimiter=',')
 
             rowNum = 0
@@ -20,7 +28,7 @@ class DataHandler:
                 if rowNum == 0:
                     header = row
                 else:
-                    image = self.get_image('data/' + row[0])
+                    image = self.get_image(self.data_dir + '/' + row[0])
                     angle = row[3]
                     data.append([image, angle])
                 rowNum = rowNum + 1
@@ -33,21 +41,57 @@ class DataHandler:
 
         return (image / 255.0)
 
-    def get_data_batch(self, batchSize, iteration):
-        x_img = []
-        y = []
-        for d in self.data[batchSize * iteration:batchSize * iteration + batchSize]:
-            x_img.append(d[0])
-            y.append(d[1])
+    def get_val_batch(self, batch_size):
 
-        return x_img, y
+        batch_x = []
+        batch_y = []
 
-    def get_data_splits(self, val_split):
+        start_index = self.val_iterations*batch_size
+        end_index = (self.val_iterations+1)*batch_size
+
+        if end_index > len(self.val_data):
+            end_index = len(self.val_data)
+
+            self.val_iterations = 0
+            shuffle(self.val_data)
+
+        for i in range(start_index, end_index):
+            batch_x.append(self.val_data[i][0])
+            batch_y.append(self.val_data[i][1])
+
+        self.val_iterations = self.val_iterations + 1
+
+        return batch_x, batch_y
+
+    def get_train_batch(self, batch_size):
+
+        batch_x = []
+        batch_y = []
+
+        start_index = self.train_iterations*batch_size
+        end_index = (self.train_iterations+1)*batch_size
+
+        if end_index > len(self.train_data):
+            end_index = len(self.train_data)
+
+            self.train_iterations = 0
+            shuffle(self.train_data)
+
+        for i in range(start_index, end_index):
+            batch_x.append(self.train_data[i][0])
+            batch_y.append(self.train_data[i][1])
+
+        self.train_iterations = self.train_iterations + 1
+
+        return batch_x, batch_y
+
+
+    def generate_data_splits(self, val_split):
         if val_split < 1.0:
-            train_data = self.data[0:int((1 - val_split) * len(self.data))]
-            val_data = self.data[int((1 - val_split) * len(self.data)):]
+            self.train_data = self.data[0:int((1 - val_split) * len(self.data))]
+            self.val_data = self.data[int((1 - val_split) * len(self.data)):]
         else:
             print("Invalid validation split. Split has to be < 1")
 
-        return train_data, val_data
+        return self.train_data, self.val_data
 
