@@ -79,6 +79,6 @@ class ModelTrainer:
 
 
 if __name__ == '__main__':
-    model_trainer = ModelTrainer()
+    model_trainer = ModelTrainer(epochs=40)
     model_trainer.train_model()
 

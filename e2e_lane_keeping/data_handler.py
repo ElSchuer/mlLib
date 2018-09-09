@@ -1,7 +1,9 @@
 import scipy
 import csv
 import cv2
+import numpy as np
 from random import shuffle
+import scipy.misc
 
 class DataHandler:
 
@@ -16,6 +18,21 @@ class DataHandler:
 
         self.train_iterations = 0
         self.val_iterations = 0
+
+
+    def get_data_x(self):
+        x_data = []
+        for i in range(len(self.data)):
+            x_data.append(self.data[i][0])
+
+        return np.array(x_data)
+
+    def get_data_y(self):
+        y_data = []
+        for i in range(len(self.data)):
+            y_data.append(float(self.data[i][1]))
+
+        return np.array(y_data)
 
     def get_meta_data_from_file(self, data_desc_file):
         data = []
@@ -37,9 +54,11 @@ class DataHandler:
 
     def get_image(self, filename):
         image = scipy.misc.imresize(scipy.misc.imread(filename)[25:135], [66, 200])
-        image = cv2.cvtColor(image, cv2.COLOR_RGB2YUV)
+        #image = cv2.cvtColor(image, cv2.COLOR_RGB2YUV)
 
-        return (image / 255.0)
+        #return (image / 255.0)
+
+        return image
 
     def get_val_batch(self, batch_size):
 
@@ -57,7 +76,7 @@ class DataHandler:
 
         for i in range(start_index, end_index):
             batch_x.append(self.val_data[i][0])
-            batch_y.append(self.val_data[i][1])
+            batch_y.append(float(self.val_data[i][1]))
 
         self.val_iterations = self.val_iterations + 1
 
@@ -79,7 +98,7 @@ class DataHandler:
 
         for i in range(start_index, end_index):
             batch_x.append(self.train_data[i][0])
-            batch_y.append(self.train_data[i][1])
+            batch_y.append(float(self.train_data[i][1]))
 
         self.train_iterations = self.train_iterations + 1
 
